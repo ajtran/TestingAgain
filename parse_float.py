@@ -23,6 +23,7 @@ def parse_digit(digit):
 def parse_float(value):
     total = 0.0
     multiplier = 1.0
+    negEeth = 1.0
     eeth = 1.0
     for digit in value[::-1]:
         if digit == "-":
@@ -31,13 +32,19 @@ def parse_float(value):
             total /= multiplier
             multiplier = 1.0
         elif digit == "e" or digit == "E":
-            eeth = 10 ** -total
+            negEeth = total
+            if total < 0:
+                total *= -1
+            eeth = 10 ** total
             total = 0.0
             multiplier = 1.0
         else:    
             total += parse_digit(digit) * multiplier
             multiplier *= 10
-    return total / eeth
+    if negEeth < 0:
+        return total / eeth
+    else:
+        return total * eeth
 
 
 assert parse_float("1") == 1
@@ -53,4 +60,7 @@ assert parse_float("1503.2001") == 1503.2001
 assert parse_float("-250.0") == -250
 assert parse_float("-355.4920") == -355.492
 assert parse_float("3748e-123") == 3.748e-120
+# assert parse_float("3748e-122") == 3.748e-119
+# assert parse_float("3748e-121") == 3.748e-118
+# assert parse_float("3748e120") == 3.748e123
 assert parse_float("-000.23E-20") == -2.3e-21
